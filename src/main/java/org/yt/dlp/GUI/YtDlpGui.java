@@ -9,12 +9,14 @@ import java.awt.event.ActionListener;
 
 public class YtDlpGui implements ActionListener {
 
-    private JTextField videoUrlTextField;
-    private JLabel videoUrlLabel;
-    private JLabel statusLabel;
-    private JFrame frame;
-    private JPanel panel;
-    private JButton baixarButton;
+    final private JTextField videoUrlTextField;
+    final private JLabel videoUrlLabel;
+    final private JLabel statusLabel;
+    final private JFrame frame;
+    final private JPanel panel;
+    final private JButton downloadButton;
+    final private String[] downloadChoice = {"mp4", "mov", "mp3"};
+    final private JComboBox<String> downloadType = new JComboBox<String>(downloadChoice);
 
     public YtDlpGui() {
 
@@ -22,28 +24,36 @@ public class YtDlpGui implements ActionListener {
         panel = new JPanel();
 
         panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-        //panel.setLayout(new FlowLayout());
 
         videoUrlLabel = new JLabel("Link do video");
         videoUrlTextField = new JTextField(100);
         videoUrlTextField.addActionListener(this);
+        videoUrlLabel.setVisible(true);
+        videoUrlTextField.setVisible(true);
 
-        baixarButton = new JButton("Baixar");
-        baixarButton.addActionListener(this);
+        downloadButton = new JButton("Baixar");
+        downloadButton.addActionListener(this);
+        downloadButton.setVisible(true);
 
         statusLabel = new JLabel("");
         statusLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        statusLabel.setVisible(true);
+
+        downloadType.setVisible(true);
 
         panel.add(videoUrlLabel);
         panel.add(videoUrlTextField);
-        panel.add(baixarButton);
+        panel.add(downloadButton);
         panel.add(statusLabel);
+        panel.add(downloadType);
 
         frame.add(panel);
+        frame.setSize(1124, 576);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Yt-Dlp Downloader");
-        frame.pack();
+        frame.setLocationRelativeTo(null);
+        //frame.pack();
         frame.setVisible(true);
     }
     public static void main(String[] args) {
@@ -52,16 +62,11 @@ public class YtDlpGui implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        new SwingWorker<Void, Void>() {
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                String videoUrl = videoUrlTextField.getText();
-                videoUrlTextField.setText("");
-                String status = new YtDlpDownloader().DownloadMp4(videoUrl);
-                statusLabel.setText(status);
-                return null;
-            }
-        }.execute();
+        String videoUrl = videoUrlTextField.getText();
+        String downloadExtension = downloadType.getItemAt(downloadType.getSelectedIndex());
+        videoUrlTextField.setText("");
+        System.out.println(downloadExtension);
+        String status = YtDlpDownloader.DownloadVideo(videoUrl, downloadExtension);
+        statusLabel.setText(status);
     }
 }
