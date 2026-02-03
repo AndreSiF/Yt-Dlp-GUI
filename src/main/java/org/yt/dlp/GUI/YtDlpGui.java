@@ -11,7 +11,7 @@ public class YtDlpGui implements ActionListener {
 
     final private JTextField videoUrlTextField;
     final private JLabel videoUrlLabel;
-    final private JLabel statusLabel;
+    //final private JLabel statusLabel;
     final private JFrame frame;
     final private JPanel panel;
     final private JButton downloadButton;
@@ -35,17 +35,17 @@ public class YtDlpGui implements ActionListener {
         downloadButton.addActionListener(this);
         downloadButton.setVisible(true);
 
-        statusLabel = new JLabel("");
-        statusLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        statusLabel.setVisible(true);
+        //statusLabel = new JLabel("");
+//        statusLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+//        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        statusLabel.setVisible(true);
 
         downloadType.setVisible(true);
 
         panel.add(videoUrlLabel);
         panel.add(videoUrlTextField);
         panel.add(downloadButton);
-        panel.add(statusLabel);
+        //panel.add(statusLabel);
         panel.add(downloadType);
 
         frame.add(panel);
@@ -67,6 +67,6 @@ public class YtDlpGui implements ActionListener {
         videoUrlTextField.setText("");
         System.out.println(downloadExtension);
         String status = YtDlpDownloader.DownloadVideo(videoUrl, downloadExtension);
-        statusLabel.setText(status);
+        //statusLabel.setText(status);
     }
 }

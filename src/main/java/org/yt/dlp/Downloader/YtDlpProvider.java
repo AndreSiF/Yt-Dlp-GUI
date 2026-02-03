@@ -9,35 +9,73 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class YtDlpProvider {
-    private static final String RESOURCE_NAME = "yt-dlp";
-    private static final String APP_CACHE_DIR =
-            System.getProperty("user.home") + "/.cache/yt-dlp";
 
     private static Path ytDlpPath;
 
     public static synchronized Path getYtDlp() throws IOException {
-        // Se o arquivo existir, reutiliza
+        // If the file exists, re-use it
         if (ytDlpPath != null && Files.exists(ytDlpPath)) {
             return ytDlpPath;
         }
 
-        // Se nao existir, cria o arquivo
-        Path cacheDir = Paths.get(APP_CACHE_DIR);
-        Files.createDirectories(cacheDir);
+        String os = System.getProperty("os.name").toLowerCase();
+        boolean isWindowsOs = os.contains("win");
+        boolean isLinuxOs = os.contains("linux");
+        boolean isMacOs = os.contains("mac");
 
-        ytDlpPath = cacheDir.resolve("yt-dlp");
+        String resourceName;
+        String fileName;
+        Path cachePath;
+
+        if(isWindowsOs){
+            resourceName = "yt-dlp/windows/yt-dlp.exe";
+            fileName = "yt-dlp.exe";
+            cachePath = Paths.get(
+                    System.getenv("LOCALAPPDATA"),
+                    "yt-dlp-downloader"
+            );
+        }
+        else if (isLinuxOs) {
+            resourceName = "yt-dlp/linux/yt-dlp";
+            fileName = "yt-dlp";
+            cachePath = Paths.get(
+                    System.getProperty("user.home"),
+                    ".cache",
+                    "yt-dlp-downloader"
+            );
+        }
+        else if (isMacOs) {
+            resourceName = "yt-dlp/mac/yt-dlp_macos";
+            fileName = "yt-dlp_macos";
+            cachePath = Paths.get(
+                    System.getProperty("user.home"),
+                    "library",
+                    "Caches",
+                    "yt-dlp-downloader"
+            );
+        }
+        else {
+            throw new RuntimeException("Operating system not supported");
+        }
+
+        // If it does not exist, create the file
+        Files.createDirectories(cachePath);
+        ytDlpPath = cachePath.resolve(fileName);
+
 
         if (!Files.exists(ytDlpPath)) {
 
-            try (InputStream is = YtDlpProvider.class.getClassLoader().getResourceAsStream(RESOURCE_NAME)) {
+            try (InputStream is = YtDlpProvider.class.getClassLoader().getResourceAsStream(resourceName)) {
                 if (is == null) {
-                    throw new FileNotFoundException("Resource yt-dlp não encontrado.");
+                    throw new FileNotFoundException("Resource yt-dlp not found.");
                 }
                 Files.copy(is, ytDlpPath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // Permissão de execução (Linux)
-            ytDlpPath.toFile().setExecutable(true);
+            // Linux and MacOs permissions
+            if (!isWindowsOs){
+                ytDlpPath.toFile().setExecutable(true);
+            }
         }
 
         return ytDlpPath;
