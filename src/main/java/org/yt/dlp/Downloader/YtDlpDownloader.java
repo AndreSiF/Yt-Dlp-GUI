@@ -13,15 +13,16 @@ public class YtDlpDownloader {
 
 //          String videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
-            // Caminho onde o vídeo será salvo
+            // Path for videos
             File outputDir = new File("videos");
             if (!outputDir.exists()) {
                 outputDir.mkdirs();
             }
 
-            // Comando yt-dlp para baixar o vídeo com melhor qualidade
+            // Template for the video output
             String outputTemplate = new File(outputDir, "%(title)s.%(ext)s").getAbsolutePath();
 
+            // Download the file in using SwingWorker for no GUI lag
             new SwingWorker<Void, Void>() {
 
                 @Override
@@ -46,8 +47,7 @@ public class YtDlpDownloader {
                         );
                     }
 
-
-                    // Usar a saída padrão do processo (mostrar logs no console)
+                    // Show logs on console
                     pb.inheritIO();
 
                     System.out.println("Iniciando download com yt-dlp...");
