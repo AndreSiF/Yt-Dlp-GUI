@@ -5,16 +5,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.yt.dlp.Downloader.YtDlpDownloader;
+import org.yt.dlp.Downloader.YtDlpDownloaderTask;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class FXMLGuiController implements Initializable {
+
+    @FXML
+    ProgressBar downloadProgressBar;
 
     @FXML
     public Button downloadButton;
@@ -29,13 +31,33 @@ public class FXMLGuiController implements Initializable {
     private TextField videoUrlTextfield;
 
     @FXML
-    public void buttonActionHandler(ActionEvent event) {
+    public void buttonActionHandler(ActionEvent event) throws IOException {
 
         String downloadUrl = videoUrlTextfield.getText();
         String downloadType = videoFileType.getValue();
 
         videoUrlTextfield.setText("");
-        String status = YtDlpDownloader.DownloadVideo(downloadUrl, downloadType);
+
+        YtDlpDownloaderTask downloadTask = new YtDlpDownloaderTask(downloadUrl, downloadType);
+
+        downloadProgressBar.progressProperty().bind(downloadTask.progressProperty());
+        status.textProperty().bind(downloadTask.messageProperty());
+
+        downloadTask.setOnSucceeded(e -> {
+            downloadProgressBar.progressProperty().unbind();
+            downloadProgressBar.setProgress(1.0);
+            status.textProperty().unbind();
+            status.setText("Done!");
+        });
+
+        downloadTask.setOnFailed(e -> {
+            downloadProgressBar.progressProperty().unbind();
+            downloadProgressBar.setProgress(0);
+            status.textProperty().unbind();
+            status.setText("Error while downloading");
+        });
+
+        new Thread(downloadTask).start();
     }
 
     @Override
