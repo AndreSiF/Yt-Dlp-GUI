@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="Yt-Dlp-GUI:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Yt_Dlp_GUI_jar</output-path>
-    <root id="archive" name="Yt-Dlp-GUI.jar">
-      <element id="module-output" name="Yt-Dlp-GUI" />
-    </root>
-  </artifact>
-</component>
