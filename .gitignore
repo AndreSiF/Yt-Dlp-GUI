@@ -6,6 +6,8 @@ target/
 videos
 mods
 out
+OLD
+
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
