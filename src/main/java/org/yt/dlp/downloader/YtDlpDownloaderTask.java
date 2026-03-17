@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class YtDlpDownloaderTask extends Task<Void> {
 
@@ -25,11 +26,40 @@ public class YtDlpDownloaderTask extends Task<Void> {
     @Override
     protected Void call() throws Exception {
 
+        String os = System.getProperty("os.name").toLowerCase();
+        boolean isWindowsOs = os.contains("win");
+        boolean isLinuxOs = os.contains("linux");
+        boolean isMacOs = os.contains("mac");
 
-//        File videoDirectory = new File("videos");
-//        if (!videoDirectory.exists()) {
-//            videoDirectory.mkdirs();
-//        }
+        String ffmpegPath;
+
+        if (isWindowsOs) {
+            ffmpegPath = Paths.get(
+                    System.getenv("LOCALAPPDATA"),
+                    "yt-dlp-downloader",
+                    "bin"
+            ).toString();
+        }
+        else if (isLinuxOs) {
+            ffmpegPath = Paths.get(
+                    System.getProperty("user.home"),
+                    ".cache",
+                    "yt-dlp-downloader",
+                    "bin"
+            ).toString();
+        }
+        else if (isMacOs) {
+            ffmpegPath = Paths.get(
+                    System.getProperty("user.home"),
+                    "library",
+                    "Caches",
+                    "yt-dlp-downloader",
+                    "bin"
+            ).toString();
+        }
+        else {
+            throw new RuntimeException("OS not supported");
+        }
 
         File videoDirectory;
         if (downloadFolder != null) {
@@ -46,6 +76,7 @@ public class YtDlpDownloaderTask extends Task<Void> {
         if(downloadType.equals("mp3")) {
             ytDlpProcess.command(
                     ytDlp.toAbsolutePath().toString(),
+                    "--ffmpeg-location", ffmpegPath,
                     "-x", "--audio-format", downloadType,
                     "--progress",
                     "-o", outputTemplate,
@@ -55,6 +86,7 @@ public class YtDlpDownloaderTask extends Task<Void> {
         else {
             ytDlpProcess.command(
                     ytDlp.toAbsolutePath().toString(),
+                    "--ffmpeg-location", ffmpegPath,
                     "-f", "bv*[vcodec^=avc1]+ba[acodec^=mp4a]/b",
                     "--merge-output-format", downloadType,
                     "--progress",
@@ -72,8 +104,6 @@ public class YtDlpDownloaderTask extends Task<Void> {
             String line;
             while ((line = reader.readLine()) != null) {
 
-                // yt-dlp imprime progresso assim:
-                // [download]  42.3% of ...
                 if (line.contains("%")) {
                     parseProgress(line);
                 }
