@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.yt.dlp.gui.FXMLGuiController"
+            prefHeight="480"
+            prefWidth="640"
+>
+
+   <center>
+      <VBox spacing="15"
+            alignment="CENTER"
+            BorderPane.alignment="CENTER"
+            style="-fx-padding: 50;"
+      >
+
+         <Label text="Video link:">
+            <font>
+               <Font size="18"/>
+            </font>
+         </Label>
+
+         <TextField fx:id="videoUrlTextfield"
+                    promptText="Paste the URL here..."
+                    maxWidth="Infinity"
+         />
+
+         <HBox spacing="10" alignment="CENTER">
+            <ChoiceBox fx:id="videoFileType"
+                       prefWidth="120"
+            />
+
+            <Button fx:id="downloadButton"
+                    text="Download"
+                    onAction="#buttonActionHandler"
+                    styleClass="accent"
+            />
+         </HBox>
+
+         <Label fx:id="status">
+            <font>
+               <Font size="14"/>
+            </font>
+         </Label>
+
+         <ProgressBar fx:id="downloadProgressBar"
+                      progress="0.0"
+                      maxWidth="Infinity"
+         />
+
+         <HBox spacing="10" alignment="CENTER">
+            <Button text="Download folder"
+                    onAction="#chooseDirectory"/>
+
+            <Label fx:id="selectedPathLabel"
+                   text="Default folder: videos"
+                   maxWidth="Infinity"/>
+         </HBox>
+
+      </VBox>
+   </center>
+
+</BorderPane>
