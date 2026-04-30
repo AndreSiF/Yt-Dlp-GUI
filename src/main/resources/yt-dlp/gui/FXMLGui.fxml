@@ -39,6 +39,12 @@
                     onAction="#buttonActionHandler"
                     styleClass="accent"
             />
+
+            <Button fx:id="cancelButton"
+                    text="Cancel"
+                    onAction="#buttonActionHandler"
+                    styleClass="danger"
+            />
          </HBox>
 
          <Label fx:id="status">

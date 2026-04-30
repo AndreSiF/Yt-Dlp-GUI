@@ -21,6 +21,7 @@ public class YtDlpGuiFx extends Application {
 
         Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
 
+
         Scene scene = new Scene(root);
 
         stage.setTitle("Downvid 0.3");

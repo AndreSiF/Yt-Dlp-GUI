@@ -174,16 +174,4 @@ public class YtDlpProvider {
 
         }
     }
-
-    public static void main(String[] args) {
-        try {
-            Enumeration<URL> resources = YtDlpProvider.class.getClassLoader().getResources("");
-            System.out.println("--- Listando Raiz do Classpath ---");
-            while (resources.hasMoreElements()) {
-                System.out.println(resources.nextElement());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
