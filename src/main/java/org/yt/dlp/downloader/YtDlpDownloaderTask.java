@@ -98,8 +98,7 @@ public class YtDlpDownloaderTask extends Task<Void> {
         ytDlpProcess.redirectErrorStream(true);
         Process process = ytDlpProcess.start();
 
-        try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -116,13 +115,18 @@ public class YtDlpDownloaderTask extends Task<Void> {
         }
 
         int exitCode = process.waitFor();
-        if(exitCode != 0) {
+        if (exitCode != 0) {
             throw new RuntimeException("Download error");
         }
 
         updateProgress(1, 1);
         updateMessage("Done!");
         return null;
+    }
+
+    protected void canceled() {
+        super.cancelled();
+        updateMessage("Download cancelled");
     }
 
     private void parseProgress(String line) {

@@ -21,12 +21,16 @@ public class FXMLGuiController implements Initializable {
 
     private Preferences preferences = Preferences.userNodeForPackage(FXMLGuiController.class);
     private static final String SAVE_PATH_KEY = "savePath";
+    private YtDlpDownloaderTask downloadTask;
 
     @FXML
     ProgressBar downloadProgressBar;
 
     @FXML
     public Button downloadButton;
+
+    @FXML
+    public Button cancelButton;
 
     @FXML
     private Label status;
@@ -43,33 +47,54 @@ public class FXMLGuiController implements Initializable {
     private File downloadFolder;
 
     @FXML
-    public void buttonActionHandler(ActionEvent event) throws IOException {
+    public void buttonActionHandler(ActionEvent actionEvent) throws IOException {
 
+        Object source = actionEvent.getSource();
         String downloadUrl = videoUrlTextfield.getText();
         String downloadType = videoFileType.getValue();
 
         videoUrlTextfield.setText("");
 
-        YtDlpDownloaderTask downloadTask = new YtDlpDownloaderTask(downloadUrl, downloadType, downloadFolder);
+        if (source == cancelButton) {
+            if (downloadTask != null && downloadTask.isRunning()) {
+                downloadTask.cancel();
+                return;
+            }
+        }
 
-        downloadProgressBar.progressProperty().bind(downloadTask.progressProperty());
-        status.textProperty().bind(downloadTask.messageProperty());
+        if (downloadTask != null && downloadTask.isRunning()) {
+            System.out.println("A download is already running");
+        }
+        else{
+            downloadTask = new YtDlpDownloaderTask(downloadUrl, downloadType, downloadFolder);
+            downloadProgressBar.progressProperty().bind(downloadTask.progressProperty());
+            status.textProperty().bind(downloadTask.messageProperty());
 
-        downloadTask.setOnSucceeded(e -> {
-            downloadProgressBar.progressProperty().unbind();
-            downloadProgressBar.setProgress(1.0);
-            status.textProperty().unbind();
-            status.setText("Done!");
-        });
+            downloadTask.setOnSucceeded(e -> {
+                downloadProgressBar.progressProperty().unbind();
+                downloadProgressBar.setProgress(1.0);
+                status.textProperty().unbind();
+                status.setText("Done!");
+            });
 
-        downloadTask.setOnFailed(e -> {
-            downloadProgressBar.progressProperty().unbind();
-            downloadProgressBar.setProgress(0);
-            status.textProperty().unbind();
-            status.setText("Error while downloading");
-        });
+            downloadTask.setOnFailed(e -> {
+                downloadProgressBar.progressProperty().unbind();
+                downloadProgressBar.setProgress(0);
+                status.textProperty().unbind();
+                status.setText("Error while downloading");
+            });
 
-        new Thread(downloadTask).start();
+            downloadTask.setOnCancelled(e -> {
+                downloadProgressBar.progressProperty().unbind();
+                downloadProgressBar.setProgress(0);
+                status.textProperty().unbind();
+                status.setText("Download Cancelled");
+            });
+
+            Thread thread = new Thread(downloadTask);
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     @FXML
