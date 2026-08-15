@@ -7,8 +7,8 @@
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.yt.dlp.gui.FXMLGuiController"
-            prefHeight="480"
-            prefWidth="640"
+            prefHeight="720"
+            prefWidth="1280"
 >
 
    <center>
@@ -44,6 +44,7 @@
                     text="Cancel"
                     onAction="#buttonActionHandler"
                     styleClass="danger"
+                    disable="true"
             />
          </HBox>
 
@@ -69,5 +70,25 @@
 
       </VBox>
    </center>
+
+   <!-- PAINEL DO CONSOLE -->
+   <right>
+      <VBox spacing="10"
+            style="-fx-padding: 15; -fx-border-color: #ddd; -fx-border-width: 0 0 0 1;"
+            prefWidth="320">
+
+         <CheckBox fx:id="showConsole"
+                   text="Show console logs"
+                   onAction="#toggleConsole"/>
+
+         <TextArea fx:id="consoleText"
+                   visible="false"
+                   managed="false"
+                   editable="false"
+                   wrapText="true"
+                   VBox.vgrow="ALWAYS"
+                   style="-fx-font-family: monospace; -fx-font-size: 11px;"/>
+      </VBox>
+   </right>
 
 </BorderPane>

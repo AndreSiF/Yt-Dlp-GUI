@@ -1,5 +1,6 @@
 package org.yt.dlp.downloader;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.io.BufferedReader;
@@ -102,6 +103,8 @@ public class YtDlpDownloaderTask extends Task<Void> {
 
             String line;
             while ((line = reader.readLine()) != null) {
+
+                updateMessage(line);
 
                 if (line.contains("%")) {
                     parseProgress(line);
