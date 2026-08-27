@@ -44,6 +44,12 @@ public class FXMLGuiController implements Initializable {
     @FXML
     private Label selectedPathLabel;
 
+    @FXML
+    private CheckBox showConsole;
+
+    @FXML
+    private TextArea consoleText;
+
     private File downloadFolder;
 
     @FXML
@@ -55,26 +61,53 @@ public class FXMLGuiController implements Initializable {
 
         videoUrlTextfield.setText("");
 
+        // CANCEL THE TASK IF THERE IS ONE RUNNING
         if (source == cancelButton) {
             if (downloadTask != null && downloadTask.isRunning()) {
                 downloadTask.cancel();
-                return;
+                status.textProperty().unbind();
             }
+            else{
+                status.setText("Nothing to cancel");
+            }
+            return;
         }
 
+        // PREVENTS DUPLICATED TASKS FROM RUNNING
         if (downloadTask != null && downloadTask.isRunning()) {
             System.out.println("A download is already running");
         }
         else{
+            if(consoleText != null){
+                consoleText.clear();
+            }
+            if(downloadUrl.isEmpty()){
+                status.setText("Please provide a link to download");
+                return;
+            }
             downloadTask = new YtDlpDownloaderTask(downloadUrl, downloadType, downloadFolder);
             downloadProgressBar.progressProperty().bind(downloadTask.progressProperty());
-            status.textProperty().bind(downloadTask.messageProperty());
+            //status.textProperty().bind(downloadTask.messageProperty());
+            cancelButton.setDisable(false);
+            downloadButton.setDisable(true);
+
+            downloadTask.messageProperty().addListener(((observableValue, oldValue, newValue) -> {
+                if(newValue != null) {
+                    consoleText.appendText(newValue + "\n");
+
+                    if(newValue.contains("[download]") && newValue.contains("%")){
+                        status.setText(newValue);
+                    }
+                }
+            }));
 
             downloadTask.setOnSucceeded(e -> {
                 downloadProgressBar.progressProperty().unbind();
                 downloadProgressBar.setProgress(1.0);
                 status.textProperty().unbind();
                 status.setText("Done!");
+                cancelButton.setDisable(true);
+                downloadButton.setDisable(false);
             });
 
             downloadTask.setOnFailed(e -> {
@@ -82,6 +115,8 @@ public class FXMLGuiController implements Initializable {
                 downloadProgressBar.setProgress(0);
                 status.textProperty().unbind();
                 status.setText("Error while downloading");
+                cancelButton.setDisable(true);
+                downloadButton.setDisable(false);
             });
 
             downloadTask.setOnCancelled(e -> {
@@ -89,6 +124,8 @@ public class FXMLGuiController implements Initializable {
                 downloadProgressBar.setProgress(0);
                 status.textProperty().unbind();
                 status.setText("Download Cancelled");
+                cancelButton.setDisable(true);
+                downloadButton.setDisable(false);
             });
 
             Thread thread = new Thread(downloadTask);
@@ -136,5 +173,10 @@ public class FXMLGuiController implements Initializable {
             downloadFolder = new File(savedPath);
             selectedPathLabel.setText(savedPath);
         }
+    }
+
+    public void toggleConsole(ActionEvent actionEvent) {
+        consoleText.visibleProperty().bind(showConsole.selectedProperty());
+        consoleText.managedProperty().bind(showConsole.selectedProperty());
     }
 }

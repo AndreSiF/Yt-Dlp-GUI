@@ -1,5 +1,7 @@
 package org.yt.dlp.downloader;
 
+import org.yt.dlp.util.DependCheck;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +18,10 @@ public class YtDlpProvider {
     private static Path ffmpegPath;
     private static Path ffprobePath;
 
-    public static synchronized Path getYtDlp() throws IOException {
+    public static synchronized String getYtDlp() throws IOException {
         // If the file exists, re-use it
         if (ytDlpPath != null && Files.exists(ytDlpPath)) {
-            return ytDlpPath;
+            return ytDlpPath.toAbsolutePath().toString();
         }
 
         String os = System.getProperty("os.name").toLowerCase();
@@ -85,7 +87,7 @@ public class YtDlpProvider {
             }
         }
 
-        return ytDlpPath;
+        return ytDlpPath.toAbsolutePath().toString();
     }
 
     static void dependencyProvider(String os) throws IOException {
